@@ -21,7 +21,7 @@
     "content-type": "^1.0.4",
     "cookie": "^0.5.0",
     "cookie-signature": "^1.2.0",
-    "debug": "^2.6.9",
+    "debug": "^4.3.4",
     "depd": "^2.0.0",
     "destroy": "^1.2.0",
     "ee-first": "^1.1.1",
