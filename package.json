@@ -15,7 +15,7 @@
     "call-bind": "^1.0.2",
     "chalk": "^4.1.2",
     "color-convert": "^2.0.1",
-    "color-name": "^1.1.4",
+    "color-name": "^2.0.0",
     "concat-map": "^0.0.1",
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.4",
