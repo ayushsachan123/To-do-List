@@ -44,7 +44,7 @@
     "inherits": "^2.0.4",
     "ipaddr.js": "^2.0.1",
     "jake": "^10.8.5",
-    "media-typer": "^0.3.0",
+    "media-typer": "^1.1.0",
     "merge-descriptors": "^1.0.1",
     "methods": "^1.1.2",
     "mime": "^3.0.0",
