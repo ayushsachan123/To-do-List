@@ -18,7 +18,7 @@
     "color-name": "^2.0.0",
     "concat-map": "^0.0.2",
     "content-disposition": "^0.5.4",
-    "content-type": "^1.0.4",
+    "content-type": "^1.0.5",
     "cookie": "^0.5.0",
     "cookie-signature": "^1.2.0",
     "debug": "^4.3.4",
