@@ -43,7 +43,7 @@
     "iconv-lite": "^0.6.3",
     "inherits": "^2.0.4",
     "ipaddr.js": "^2.0.1",
-    "jake": "^10.8.6",
+    "jake": "^10.8.7",
     "lodash": "^4.17.21",
     "media-typer": "^1.1.0",
     "merge-descriptors": "^1.0.1",
