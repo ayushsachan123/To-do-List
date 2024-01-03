@@ -43,95 +43,107 @@ const listSchema={
 const List=mongoose.model("List",listSchema);
 
 app.get("/", function(req, res) {
-
-  Item.find({},function(err,foundItems){
-
-    if(foundItems.length == 0){
-      Item.insertMany(defaultItems,function(err){
-        if(err){
-          console.log(err);
-        }
-        else{
-          console.log("Successfully Saved dafault items to DB");
-        }
-      });
-
-      //After pushing items to DB we redirect it to root and again if
-      //it checks it will render it
-      res.redirect("/");
-    }
-      else{
-      res.render("list", {listTitle:"Today", newListItems: foundItems});
+  Item.find()
+    .then(foundItems => {
+      if (foundItems.length === 0) {
+        return Item.insertMany(defaultItems);
+      } else {
+        res.render("list", { listTitle: "Today", newListItems: foundItems });
+        return;  // Add return here
       }
-  });
+    })
+    .then(() => {
+      // Remove the unnecessary redirect here
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send("Internal Server Error"); // Sending an error response
+    });
 });
 
-app.get("/:customListName",function(req,res){
- const customListName = _.capitalize(req.params.customListName);
 
- List.findOne({name:customListName}, function(err,foundList){
-  if(!err){
-    if(!foundList){
-      //Create a new list
-      const list = new List({
-        name:customListName,
-        items:defaultItems
-       });
-      list.save();
-      res.redirect("/" + customListName);
-    }
-    else{
-      //Show an existing list
-      res.render("list",{listTitle:foundList.name, newListItems: foundList.items});
-    }
-  }
- });
 
+app.get("/:customListName", function(req, res) {
+  const customListName = _.capitalize(req.params.customListName);
+
+  List.findOne({ name: customListName })
+    .then(foundList => {
+      if (!foundList) {
+        const list = new List({
+          name: customListName,
+          items: defaultItems,
+        });
+        return list.save().then(() => list); // Return the list after saving
+      } else {
+        return foundList; // Return the foundList
+      }
+    })
+    .then(list => {
+      res.render("list", { listTitle: list.name, newListItems: list.items });
+      // Note: res.render() sends the response, so we don't call res.redirect() afterwards
+    })
+    .catch(err => {
+      console.log(err);
+      // Handle the error appropriately
+      res.status(500).send("Internal Server Error"); // Example error handling
+    });
 });
 
-app.post("/", function(req, res){
 
+app.post("/", function(req, res) {
   const itemName = req.body.newItem;
   const listName = req.body.list;
 
- const item = new Item({
-  name:itemName
- });
+  const item = new Item({
+    name: itemName,
+  });
 
- if(listName == "Today"){
-  item.save();
-  res.redirect("/");
- }
-else{
-  List.findOne({name: listName},function(err,foundList){
-    foundList.items.push(item);
-    foundList.save();
-    res.redirect("/" + listName);
-  })
-}
-
-});
-
-app.post("/delete",function(req,res){
-const checkedItemId = req.body.checkbox;
-const listName = req.body.listName;
-
-if(listName=="Today"){
-  Item.findByIdAndRemove(checkedItemId,function(err){
-    if(!err){
-      console.log("Successfully deleted checked item!");
+  if (listName === "Today") {
+    item.save().then(() => {
       res.redirect("/");
-    }
-  });
-}
-else{
-  List.findOneAndUpdate({name:listName},{$pull:{items:{_id:checkedItemId}}},function(err,foundList){
-    if(!err){
-      res.redirect("/" + listName);
-    }
-  });
-}
+    });
+  } else {
+    List.findOne({ name: listName })
+      .then(foundList => {
+        foundList.items.push(item);
+        return foundList.save();
+      })
+      .then(() => {
+        res.redirect("/" + listName);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 });
+
+app.post("/delete", function(req, res) {
+  const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
+
+  if (listName === "Today") {
+    Item.findByIdAndRemove(checkedItemId)
+      .then(() => {
+        console.log("Successfully deleted checked item!");
+        res.redirect("/");
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  } else {
+    List.findOneAndUpdate(
+      { name: listName },
+      { $pull: { items: { _id: checkedItemId } } }
+    )
+      .then(() => {
+        res.redirect("/" + listName);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+});
+
 
 
 app.get("/about", function(req, res){
